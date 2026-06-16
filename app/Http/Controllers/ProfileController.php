@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\File;
 
 class ProfileController extends Controller
 {
@@ -30,6 +31,17 @@ class ProfileController extends Controller
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
+        }
+
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if it exists
+            if ($request->user()->avatar && File::exists(public_path('avatars/' . $request->user()->avatar))) {
+                File::delete(public_path('avatars/' . $request->user()->avatar));
+            }
+
+            $fileName = time() . '.' . $request->file('avatar')->extension();
+            $request->file('avatar')->move(public_path('avatars'), $fileName);
+            $request->user()->avatar = $fileName;
         }
 
         $request->user()->save();

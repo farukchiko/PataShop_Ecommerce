@@ -165,7 +165,7 @@
                     <div class="relative z-10 mb-6 md:mb-0 md:max-w-lg text-center md:text-left">
                         <span class="inline-block py-1 px-3 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider mb-3">Mega Sale</span>
                         <h2 class="text-3xl md:text-4xl font-black mb-4 leading-tight">Get 20% Off Your First Purchase</h2>
-                        <p class="text-amber-50 text-lg font-medium">Use code <span class="font-bold bg-white text-amber-600 px-2 py-1 rounded">SWEET20</span> at checkout to claim your discount across all categories.</p>
+                        <p class="text-amber-50 text-lg font-medium">Use code <span class="font-bold bg-white text-amber-600 px-2 py-1 rounded">PATA20</span> at checkout to claim your discount across all categories.</p>
                     </div>
                     <div class="relative z-10 shrink-0">
                         <a href="#products" class="inline-block bg-white text-amber-600 hover:bg-amber-50 font-bold text-lg py-4 px-8 rounded-full shadow-lg transition-transform hover:scale-105">

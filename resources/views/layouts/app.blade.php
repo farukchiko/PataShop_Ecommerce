@@ -13,6 +13,26 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Lenis Smooth Scrolling -->
+        <script src="https://unpkg.com/lenis@1.1.5/dist/lenis.min.js"></script>
+        <style>
+            html.lenis, html.lenis body {
+                height: auto;
+            }
+            .lenis.lenis-smooth {
+                scroll-behavior: auto !important;
+            }
+            .lenis.lenis-smooth [data-lenis-prevent] {
+                overscroll-behavior: contain;
+            }
+            .lenis.lenis-stopped {
+                overflow: hidden;
+            }
+            .lenis.lenis-smooth iframe {
+                pointer-events: none;
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
@@ -32,5 +52,27 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <script>
+            // Initialize Lenis
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: false,
+                touchMultiplier: 2,
+                infinite: false,
+            });
+
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+
+            requestAnimationFrame(raf);
+        </script>
     </body>
 </html>
