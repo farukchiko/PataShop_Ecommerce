@@ -55,7 +55,16 @@
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-amber-900 bg-transparent hover:text-amber-600 focus:outline-none transition ease-in-out duration-150">
-                                <div>{{ Auth::user()->name }}</div>
+                                <div class="flex items-center gap-2">
+                                    @if(Auth::user()->avatar)
+                                        <img src="{{ asset('avatars/' . Auth::user()->avatar) }}" alt="Avatar" class="h-8 w-8 rounded-full object-cover border border-amber-200">
+                                    @else
+                                        <div class="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 border border-amber-200">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                        </div>
+                                    @endif
+                                    <span>{{ Auth::user()->name }}</span>
+                                </div>
 
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -133,8 +142,19 @@
         <div class="pt-4 pb-1 border-t border-amber-200">
             @auth
                 <div class="px-4">
-                    <div class="font-medium text-base text-amber-900">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-amber-700">{{ Auth::user()->email }}</div>
+                    <div class="flex items-center gap-3 mb-2">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ asset('avatars/' . Auth::user()->avatar) }}" alt="Avatar" class="h-10 w-10 rounded-full object-cover border border-amber-200">
+                        @else
+                            <div class="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 border border-amber-200">
+                                <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                            </div>
+                        @endif
+                        <div>
+                            <div class="font-medium text-base text-amber-900">{{ Auth::user()->name }}</div>
+                            <div class="font-medium text-sm text-amber-700">{{ Auth::user()->email }}</div>
+                        </div>
+                    </div>
                     @if(Auth::user()->role !== 'admin')
                         <div class="font-medium text-sm text-green-700 mt-1">Rp {{ number_format(Auth::user()->money, 0, ',', '.') }}</div>
                     @endif
