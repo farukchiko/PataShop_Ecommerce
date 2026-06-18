@@ -10,7 +10,7 @@ class UserOrderController extends Controller
 {
     public function index()
     {
-        $orders = Auth::user()->orders()->with('order_details.product')->latest()->get();
+        $orders = Auth::user()->orders()->with(['order_details.product', 'shippingAddress'])->latest()->get();
         return view('orders.index', compact('orders'));
     }
 

@@ -30,6 +30,8 @@ class StorefrontController extends Controller
 
     public function show(Product $product)
     {
-        return view('storefront.show', compact('product'));
+        $product->load(['reviews.user']);
+        $averageRating = $product->reviews->avg('rating');
+        return view('storefront.show', compact('product', 'averageRating'));
     }
 }

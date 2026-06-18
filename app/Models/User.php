@@ -51,4 +51,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(TopUp::class);
     }
+
+    public function shippingAddresses()
+    {
+        return $this->hasMany(ShippingAddress::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

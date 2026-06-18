@@ -26,6 +26,7 @@ class Order extends Model
         'total_price',
         'status',
         'shipped_at',
+        'shipping_address_id',
     ];
 
     protected $casts = [
@@ -40,5 +41,15 @@ class Order extends Model
     public function order_details()
     {
         return $this->hasMany(OrderDetail::class);
+    }
+
+    public function shippingAddress()
+    {
+        return $this->belongsTo(ShippingAddress::class, 'shipping_address_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }

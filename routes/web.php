@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\AdminSalesController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ShippingAddressController;
 
 // Public Storefront Routes
 Route::get('/', [StorefrontController::class, 'index'])->name('storefront.index');
@@ -20,7 +21,7 @@ Route::get('/dashboard', function () {
 Route::get('/products/{product}', [StorefrontController::class, 'show'])->name('storefront.show');
 
 // Customer Protected Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', CheckRole::class.':customer'])->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
@@ -33,6 +34,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::patch('/orders/{order}/complete', [UserOrderController::class, 'complete'])->name('orders.complete');
+
+    Route::resource('shipping-addresses', ShippingAddressController::class)->except(['show']);
+
+    Route::get('/orders/{order}/products/{product}/review', [\App\Http\Controllers\ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/orders/{order}/products/{product}/review', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    
+    // Review Edit and Delete
+    Route::get('/reviews/{review}/edit', [\App\Http\Controllers\ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::put('/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
+});
+
+Route::middleware(['auth', 'CheckRole:admin'])->group(function () {
+    Route::delete('/admin/reviews/{review}', [\App\Http\Controllers\ReviewController::class, 'destroyAdmin'])->name('admin.reviews.destroy');
 });
 
 // General Auth Routes

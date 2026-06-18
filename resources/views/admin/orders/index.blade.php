@@ -101,7 +101,73 @@
                                         {{ $detail->quantity }} x Rp {{ number_format($detail->price, 0, ',', '.') }}
                                     </div>
                                 </div>
+                                
+                                <!-- Show Review to Admin if exists -->
+                                @if($order->status === 'completed')
+                                    @php
+                                        $review = \App\Models\Review::where('order_id', $order->id)
+                                                            ->where('product_id', $detail->product_id)
+                                                            ->first();
+                                    @endphp
+                                    @if($review)
+                                        <div class="mt-2 ml-11 mb-3 bg-white p-3 rounded-xl border border-amber-100 shadow-sm">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <div class="text-xs font-bold text-amber-900 flex items-center gap-2">
+                                                    Ulasan Pelanggan: 
+                                                    <span class="flex items-center text-amber-500">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <svg class="w-3 h-3 {{ $i <= $review->rating ? 'text-amber-500' : 'text-amber-200' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        @endfor
+                                                    </span>
+                                                </div>
+                                                <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Hapus ulasan ini?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-[10px] uppercase font-bold text-red-500 hover:text-red-700 transition-colors">Hapus</button>
+                                                </form>
+                                            </div>
+                                            <p class="text-xs text-amber-800/80 mb-2">{{ $review->comment }}</p>
+                                            
+                                            @if($review->media_paths && count($review->media_paths) > 0)
+                                                <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                                                    @foreach($review->media_paths as $media)
+                                                        @php 
+                                                            $ext = pathinfo($media, PATHINFO_EXTENSION); 
+                                                            $isImage = in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                                        @endphp
+                                                        <div class="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border border-amber-200">
+                                                            @if($isImage)
+                                                                <img src="{{ asset('reviews/' . $media) }}" class="w-full h-full object-cover">
+                                                            @else
+                                                                <video src="{{ asset('reviews/' . $media) }}" class="w-full h-full object-cover bg-amber-900"></video>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                @endif
                             @endforeach
+                        </div>
+
+                        <!-- Shipping Address Section -->
+                        <div class="mt-6 pt-6 border-t border-amber-100">
+                            <h4 class="text-sm font-bold text-amber-900 mb-3 uppercase tracking-wider flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                Shipping Address
+                            </h4>
+                            @if($order->shippingAddress)
+                                <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                                    <div class="font-bold text-amber-900 mb-1">{{ $order->shippingAddress->recipient_name }}</div>
+                                    <div class="text-sm font-medium text-amber-700 mb-2">{{ $order->shippingAddress->phone }}</div>
+                                    <div class="text-sm text-amber-800 leading-relaxed">{{ $order->shippingAddress->full_address }}<br>{{ $order->shippingAddress->city }}, {{ $order->shippingAddress->postal_code }}</div>
+                                </div>
+                            @else
+                                <div class="text-sm italic text-amber-700/60 font-medium">No shipping address recorded for this order.</div>
+                            @endif
                         </div>
                     </div>
 

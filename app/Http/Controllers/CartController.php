@@ -12,7 +12,8 @@ class CartController extends Controller
     public function index()
     {
         $carts = Auth::user()->carts()->with('product')->get();
-        return view('cart.index', compact('carts'));
+        $addresses = Auth::user()->shippingAddresses()->get();
+        return view('cart.index', compact('carts', 'addresses'));
     }
 
     public function store(Request $request)

@@ -77,23 +77,77 @@
                             </table>
                         </div>
 
-                        <div class="mt-8 flex flex-col md:flex-row justify-between items-center bg-amber-50 border border-amber-100 p-6 rounded-xl shadow-sm">
-                            <div class="mb-4 md:mb-0">
-                                <span class="text-amber-800 text-lg font-medium">Your Balance: </span>
-                                <span class="text-xl font-bold text-green-600 ml-2">Rp {{ number_format(Auth::user()->money, 0, ',', '.') }}</span>
-                            </div>
-                            <div class="flex items-center space-x-6">
-                                <div class="text-right">
-                                    <span class="text-amber-800 text-lg font-medium">Total Amount:</span>
-                                    <div class="text-3xl font-black text-amber-700">Rp {{ number_format($total, 0, ',', '.') }}</div>
+                        <div class="mt-8 border border-amber-100 rounded-2xl overflow-hidden shadow-sm">
+                            <form action="{{ route('checkout.store') }}" method="POST">
+                                @csrf
+                                <!-- Address Selection Section -->
+                                <div class="bg-white p-6 border-b border-amber-100">
+                                    <h4 class="text-lg font-bold text-amber-900 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        Shipping Address
+                                    </h4>
+                                    
+                                    @if($addresses->isEmpty())
+                                        <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                                            <div class="flex items-center text-orange-800">
+                                                <svg class="w-6 h-6 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                <span class="font-medium text-sm sm:text-base">You must add a shipping address before you can checkout.</span>
+                                            </div>
+                                            <a href="{{ route('shipping-addresses.create', ['redirect_to_cart' => 1]) }}" class="whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded-full shadow-md transition-all duration-200 hover:scale-105">
+                                                Add New Address
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            @foreach($addresses as $address)
+                                                <label class="relative flex cursor-pointer rounded-xl border border-amber-200 bg-white p-4 shadow-sm hover:bg-amber-50 focus-within:ring-2 focus-within:ring-amber-500 transition-colors">
+                                                    <input type="radio" name="shipping_address_id" value="{{ $address->id }}" class="peer sr-only" {{ $loop->first ? 'checked' : '' }} required>
+                                                    
+                                                    <div class="flex flex-col w-full peer-checked:text-amber-900">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-sm font-bold text-amber-900">{{ $address->recipient_name }}</span>
+                                                            <svg class="hidden h-5 w-5 text-amber-600 peer-checked:block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                                        </div>
+                                                        <span class="mt-1 text-xs text-amber-700">{{ $address->phone }}</span>
+                                                        <span class="mt-2 text-xs text-amber-800 leading-relaxed line-clamp-2">{{ $address->full_address }}, {{ $address->city }}, {{ $address->postal_code }}</span>
+                                                    </div>
+                                                    
+                                                    <!-- Checked styling wrapper -->
+                                                    <div class="absolute -inset-px rounded-xl border-2 border-transparent peer-checked:border-amber-500 pointer-events-none" aria-hidden="true"></div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                        <div class="mt-4 text-right">
+                                            <a href="{{ route('shipping-addresses.create', ['redirect_to_cart' => 1]) }}" class="text-sm font-bold text-amber-600 hover:text-amber-800 underline transition-colors">+ Add Another Address</a>
+                                        </div>
+                                    @endif
                                 </div>
-                                <form action="{{ route('checkout.store') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 px-8 rounded-xl shadow-md transform transition duration-200 hover:-translate-y-1 text-lg">
-                                        Checkout Now
-                                    </button>
-                                </form>
-                            </div>
+
+                                <!-- Summary & Checkout Button Section -->
+                                <div class="flex flex-col md:flex-row justify-between items-center bg-amber-50/80 p-6 md:p-8">
+                                    <div class="mb-6 md:mb-0 bg-white px-6 py-4 rounded-xl border border-amber-200 shadow-sm w-full md:w-auto">
+                                        <span class="text-amber-800 text-sm font-bold uppercase tracking-wider block mb-1">Your E-Wallet Balance</span>
+                                        <span class="text-2xl font-black text-green-600 flex items-center">
+                                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                            Rp {{ number_format(Auth::user()->money, 0, ',', '.') }}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row items-center gap-6 w-full md:w-auto">
+                                        <div class="text-center sm:text-right w-full sm:w-auto">
+                                            <span class="text-amber-800 text-sm font-bold uppercase tracking-wider block mb-1">Total Amount</span>
+                                            <div class="text-3xl font-black text-amber-700">Rp {{ number_format($total, 0, ',', '.') }}</div>
+                                        </div>
+                                        
+                                        <button type="submit" 
+                                            class="w-full sm:w-auto text-white font-bold py-4 px-10 rounded-xl shadow-lg transform transition duration-200 text-lg flex items-center justify-center
+                                            {{ $addresses->isEmpty() ? 'bg-gray-400 cursor-not-allowed' : 'bg-amber-600 hover:bg-amber-700 hover:-translate-y-1 hover:shadow-xl' }}"
+                                            {{ $addresses->isEmpty() ? 'disabled' : '' }}>
+                                            Checkout Now
+                                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     @endif
                 </div>

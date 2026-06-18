@@ -70,8 +70,8 @@
                 @if(!request('search'))
                     <div class="flex flex-col md:flex-row justify-between items-end mb-10 px-4 sm:px-0">
                         <div>
-                            <h2 class="text-4xl font-black text-amber-900 tracking-tight">Featured Products</h2>
-                            <p class="mt-2 text-lg text-amber-700/80 font-medium">Explore our top picks and daily deals.</p>
+                            <h2 class="text-4xl font-black text-amber-900 tracking-tight">Products</h2>
+                            <p class="mt-2 text-lg text-amber-700/80 font-medium">Explore all our products and daily deals.</p>
                         </div>
                     </div>
                 @endif

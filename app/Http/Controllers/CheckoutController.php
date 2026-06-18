@@ -12,7 +12,18 @@ class CheckoutController extends Controller
 {
     public function store(Request $request)
     {
+        $request->validate([
+            'shipping_address_id' => 'required|exists:shipping_addresses,id',
+        ]);
+
         $user = Auth::user();
+
+        // Verify the address belongs to the user
+        $address = $user->shippingAddresses()->find($request->shipping_address_id);
+        if (!$address) {
+            return back()->with('error', 'Invalid shipping address selected.');
+        }
+
         $carts = $user->carts()->with('product')->get();
 
         if ($carts->isEmpty()) {
@@ -50,6 +61,7 @@ class CheckoutController extends Controller
             $order = Order::create([
                 'user_id' => $user->id,
                 'total_price' => $totalPrice,
+                'shipping_address_id' => $address->id,
             ]);
 
             // Create Order Details and Deduct Stock

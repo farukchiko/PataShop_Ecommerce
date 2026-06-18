@@ -77,12 +77,47 @@
                                                 <div class="text-sm text-amber-700/80 mt-1">
                                                     {{ $detail->quantity }} x Rp {{ number_format($detail->price, 0, ',', '.') }}
                                                 </div>
+                                                @if($order->status === 'completed')
+                                                    @php
+                                                        $review = \App\Models\Review::where('order_id', $order->id)
+                                                                            ->where('product_id', $detail->product_id)
+                                                                            ->where('user_id', Auth::id())
+                                                                            ->first();
+                                                    @endphp
+                                                    <div class="mt-2 flex items-center gap-2">
+                                                        @if(!$review)
+                                                            <a href="{{ route('reviews.create', [$order->id, $detail->product_id]) }}" class="inline-block text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1.5 rounded-lg shadow-sm transition-colors">Tulis Ulasan</a>
+                                                        @else
+                                                            <span class="inline-block text-xs font-bold text-green-700 bg-green-100 px-3 py-1.5 rounded-lg border border-green-200">Sudah Diulas</span>
+                                                            @if(now()->diffInHours($review->created_at) <= 24)
+                                                                <a href="{{ route('reviews.edit', $review->id) }}" class="inline-block text-xs font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-lg border border-amber-200 transition-colors">Edit Ulasan</a>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="text-right">
                                                 <span class="font-black text-amber-900">Rp {{ number_format($detail->quantity * $detail->price, 0, ',', '.') }}</span>
                                             </div>
                                         </div>
                                     @endforeach
+                                </div>
+
+                                <!-- Shipping Address Section -->
+                                <div class="mt-6 pt-4 border-t border-amber-100">
+                                    <h5 class="text-sm font-bold text-amber-900 mb-2 uppercase tracking-wider flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        Alamat Pengiriman
+                                    </h5>
+                                    @if($order->shippingAddress)
+                                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                                            <div class="font-bold text-amber-900 mb-1">{{ $order->shippingAddress->recipient_name }}</div>
+                                            <div class="text-sm font-medium text-amber-700 mb-2">{{ $order->shippingAddress->phone }}</div>
+                                            <div class="text-sm text-amber-800 leading-relaxed">{{ $order->shippingAddress->full_address }}<br>{{ $order->shippingAddress->city }}, {{ $order->shippingAddress->postal_code }}</div>
+                                        </div>
+                                    @else
+                                        <div class="text-sm italic text-amber-700/60 font-medium">Tidak ada data alamat pengiriman.</div>
+                                    @endif
                                 </div>
 
                                 <!-- Action Section -->

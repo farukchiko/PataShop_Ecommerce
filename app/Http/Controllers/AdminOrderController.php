@@ -9,7 +9,7 @@ class AdminOrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user', 'order_details.product')->latest()->get();
+        $orders = Order::with(['user', 'order_details.product', 'shippingAddress'])->latest()->get();
         return view('admin.orders.index', compact('orders'));
     }
 
